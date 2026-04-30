@@ -1,0 +1,29 @@
+[project]
+name = "dt-orchestrator-bridge"
+version = "0.1.0"
+description = "PoC bridging Matterix DT with SDL orchestrator"
+requires-python = ">=3.11"
+dependencies = [
+    "twin-core",
+    "twin-sim",
+    "twin-real",
+]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+twin-core = { workspace = true }
+twin-sim = { workspace = true }
+twin-real = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.6",
+]
