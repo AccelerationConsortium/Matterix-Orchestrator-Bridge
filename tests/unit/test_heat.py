@@ -22,18 +22,18 @@ def _frames() -> StaticFrameService:
 
 
 def test_heat_to_workflow_yields_one_step() -> None:
-    op = Heat(asset_name="hotplate", target_temperature_k=373.15, duration_s=10.0)
+    op = Heat(asset_name="ika_plate", target_temperature_k=373.15, duration_s=10.0)
     wf = operation_to_workflow(op)
     assert len(wf) == 1
     assert wf[0].primitive == "heat"
-    assert wf[0].target_object == "hotplate"
+    assert wf[0].target_object == "ika_plate"
     assert wf[0].extras["target_temperature_k"] == 373.15
     assert wf[0].extras["duration_s"] == 10.0
 
 
 def test_heat_lowering_is_single_no_op_action_with_extras() -> None:
     wf = operation_to_workflow(
-        Heat(asset_name="hotplate", target_temperature_k=300.0, duration_s=2.0)
+        Heat(asset_name="ika_plate", target_temperature_k=300.0, duration_s=2.0)
     )
     actions = lower_workflow(wf, _frames())
     assert len(actions) == 1
@@ -41,13 +41,13 @@ def test_heat_lowering_is_single_no_op_action_with_extras() -> None:
     assert a.target_pose is None
     assert a.gripper_command is None
     assert a.extras["phase"] == "heat"
-    assert a.extras["asset_name"] == "hotplate"
+    assert a.extras["asset_name"] == "ika_plate"
     assert a.extras["target_temperature_k"] == 300.0
     assert a.extras["duration_s"] == 2.0
 
 
 def test_heat_missing_extras_raises_schema() -> None:
-    bad = WorkflowStep(primitive="heat", target_object="hotplate")
+    bad = WorkflowStep(primitive="heat", target_object="ika_plate")
     with pytest.raises(SchemaError):
         lower_workflow([bad], _frames())
 
@@ -71,10 +71,10 @@ def test_combined_pickandplace_then_heat_runs_through_orchestrator() -> None:
         PickAndPlace(
             source_object="beaker",
             source_frame="grasp",
-            target_object="hotplate",
+            target_object="ika_plate",
             target_frame="place",
         ),
-        Heat(asset_name="hotplate", target_temperature_k=353.15, duration_s=3.0),
+        Heat(asset_name="ika_plate", target_temperature_k=353.15, duration_s=3.0),
     ]
     record = orch.run(plan)
     assert record.completed
@@ -92,10 +92,10 @@ def test_preflight_passes_combined_plan() -> None:
         PickAndPlace(
             source_object="beaker",
             source_frame="grasp",
-            target_object="hotplate",
+            target_object="ika_plate",
             target_frame="place",
         ),
-        Heat(asset_name="hotplate", target_temperature_k=353.15, duration_s=3.0),
+        Heat(asset_name="ika_plate", target_temperature_k=353.15, duration_s=3.0),
     ]:
         plan_workflow.extend(operation_to_workflow(op))
     assert preflight(plan_workflow, _frames()).ok
@@ -108,7 +108,7 @@ def test_place_at_accepts_place_frame_per_matterix_convention() -> None:
         PickAndPlace(
             source_object="beaker",
             source_frame="grasp",
-            target_object="hotplate",
+            target_object="ika_plate",
             target_frame="place",
         )
     )

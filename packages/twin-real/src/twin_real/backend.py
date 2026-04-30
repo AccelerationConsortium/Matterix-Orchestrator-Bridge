@@ -27,7 +27,14 @@ class CommunicationError(ValidationError):
 
 @dataclass
 class RealStubBackend:
-    """Stateful stub of a real Franka + Robotiq85 controller."""
+    """Stateful stub of a real Franka + Robotiq85 controller.
+
+    `position_bias_m` simulates a real-hardware calibration offset that
+    DT does not know about. When set, every commanded ee target gets
+    this constant offset applied — sim sees the unbiased target, real
+    reports the biased actual. Used by the shadow-mode demo to make
+    `DivergenceAlert` fire deterministically.
+    """
 
     initial_ee_pose: Pose = field(
         default_factory=lambda: Pose(position=(0.0, 0.0, 0.5))
@@ -35,6 +42,7 @@ class RealStubBackend:
     latency_seconds: tuple[float, float] = (0.5, 2.0)
     rng: random.Random = field(default_factory=random.Random)
     failure_spec_env_var: str = "TWIN_REAL_INJECT_FAILURE"
+    position_bias_m: tuple[float, float, float] = (0.0, 0.0, 0.0)
 
     _ee_pose: Pose = field(init=False)
     _gripper_closed: bool = field(init=False, default=False)
@@ -61,7 +69,15 @@ class RealStubBackend:
             self._apply_gripper(action.gripper_command)
 
         if action.target_pose is not None:
-            self._ee_pose = action.target_pose
+            bx, by, bz = self.position_bias_m
+            if (bx, by, bz) == (0.0, 0.0, 0.0):
+                self._ee_pose = action.target_pose
+            else:
+                px, py, pz = action.target_pose.position
+                self._ee_pose = Pose(
+                    position=(px + bx, py + by, pz + bz),
+                    orientation=action.target_pose.orientation,
+                )
 
         return self._observation()
 

@@ -1,4 +1,4 @@
-"""Composite workflow: Pick beaker → Place on hotplate → Heat to 80°C.
+"""Composite workflow: Pick beaker → Place on ika_plate → Heat to 80°C.
 
 Run:
     uv run python examples/07_heat_workflow.py
@@ -7,7 +7,7 @@ Demonstrates:
   * The bridge handles >1 UnitOperation in a single plan (extensibility).
   * The bridge handles a non-motion UO (Heat — semantic action) alongside
     a motion UO (PickAndPlace).
-  * Asset names match real Matterix scene names (`beaker`, `hotplate`)
+  * Asset names match real Matterix scene names (`beaker`, `ika_plate`)
     so the same plan would run on a real Matterix task that registers
     both assets (stock `Matterix-Test-Beaker-Lift-Franka-v1` does NOT
     yet — see docs/findings.md "Things that remain unknown").
@@ -34,11 +34,11 @@ def main() -> None:
         PickAndPlace(
             source_object="beaker",
             source_frame="grasp",
-            target_object="hotplate",
+            target_object="ika_plate",
             target_frame="place",        # matches Matterix PlaceObjectCfg convention
         ),
         Heat(
-            asset_name="hotplate",
+            asset_name="ika_plate",
             target_temperature_k=353.15,  # 80°C
             duration_s=5.0,
         ),

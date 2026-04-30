@@ -44,7 +44,7 @@ class Heat(UnitOperation):
     are observable via the env's IsHeaterOn predicate after run.
     """
 
-    asset_name: str               # heater asset (e.g., "hotplate")
+    asset_name: str               # heater asset (e.g., "ika_plate")
     target_temperature_k: float   # Kelvin (373.15 = 100°C)
     duration_s: float             # how long to hold the on-state
 

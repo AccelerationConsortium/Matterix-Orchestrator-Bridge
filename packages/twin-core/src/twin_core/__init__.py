@@ -4,7 +4,7 @@ This package has zero runtime dependencies on Matterix or Isaac Sim.
 Everything here must be importable on a CPU-only machine in <1s.
 """
 
-from twin_core.arbiter import Arbiter, ArbiterResult, Mode
+from twin_core.arbiter import Arbiter, ArbiterResult, DivergenceAlert, Mode
 from twin_core.errors import (
     FrameNotFound,
     PhysicalInfeasibility,
@@ -43,6 +43,7 @@ __all__ = [
     "Arbiter",
     "ArbiterResult",
     "CheckResult",
+    "DivergenceAlert",
     "ExecutorBackend",
     "FrameNotFound",
     "FrameService",

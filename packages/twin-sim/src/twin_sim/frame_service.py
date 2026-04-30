@@ -41,8 +41,10 @@ class StaticFrameService:
             Frame *names* match BEAKER_500ML_INST_CFG; coordinates here
             are world-space placeholders for fake-sim. Real Matterix
             resolves these from object-local frames at runtime.
-          * On placement targets (hotplate): pre_place/place — matches
-            PlaceObjectCfg's hard-coded frame names.
+          * On placement targets (ika_plate): pre_place / place /
+            post_place — matches both PlaceObjectCfg's hard-coded frame
+            names AND the actual IKA_PLATE_INST_CFG.frames in
+            matterix_assets.equipment.ika_plate.
           * On the table: dropoff_* slots are fake-sim-only (the stock
             table-thorlabs USD does NOT declare these). Used by the
             existing safety demo to keep fake-sim runs working.
@@ -54,9 +56,13 @@ class StaticFrameService:
                     "grasp": Pose(position=(0.60, 0.05, 0.10)),
                     "post_grasp": Pose(position=(0.60, 0.05, 0.30)),
                 },
-                "hotplate": {
-                    "pre_place": Pose(position=(0.40, -0.20, 0.30)),
-                    "place": Pose(position=(0.40, -0.20, 0.15)),
+                "ika_plate": {
+                    # Coordinates from real IKA_PLATE_INST_CFG.frames
+                    # (object-local; world placement is pos=(0.4,-0.3,0.12)
+                    # in test_semantics_heat_transfer task config).
+                    "pre_place": Pose(position=(0.40, -0.30, 0.37)),
+                    "place": Pose(position=(0.40, -0.30, 0.25)),
+                    "post_place": Pose(position=(0.40, -0.30, 0.37)),
                 },
                 "table": {
                     # Fake-sim-only multi-slot dropoff. Real

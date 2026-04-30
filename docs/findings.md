@@ -165,6 +165,58 @@ Adding a new UO is: dataclass + extend `operation_to_workflow` + extend
 `_step_to_matterix_cfg` + (optional) extend `lower_workflow` for the
 per-step path. Roughly 30-50 lines of code per UO.
 
+## Real Matterix task that supports the full bridge demo
+
+`Matterix-Test-Semantics-Heat-Transfer-Franka-v1` (in
+`source/matterix_tasks/test_dev_tasks/test_semantics_heat_transfer.py`)
+is the only stock Matterix task that includes both beaker AND ika_plate
+AND a heat-transfer semantic stack. Its `pickup_and_place_beaker`
+workflow runs:
+
+```
+WaitCfg(2) →
+TurnOnHeaterCfg(ika_plate, on, 373.15K) →
+PickObjectCfg(beaker) →
+PlaceObjectCfg(target=ika_plate) →
+WaitCfg(10) →
+TurnOnHeaterCfg(ika_plate, off) →
+WaitCfg(5)
+```
+
+The bridge can produce a structurally equivalent sequence from a
+2-UO plan (`PickAndPlace + Heat`) — see `examples/08_run_real_matterix_heat.py`.
+This is the end-to-end demo of "bridge ↔ Matterix StateMachine" the
+charter §3 Demo 1 envisions, but now using a real multi-asset
+workflow instead of just a pick.
+
+## Shadow mode + DT-as-experiment-validator (second-half value claim)
+
+Day 9 stretch goal moved into scope per user direction. New `Mode.SHADOW`:
+
+```
+sim_backend  ┐
+             ├──► same Action stream lockstep ──► compare ee_pose per step
+real_backend ┘                                      │
+                                                    ▼
+                                           DivergenceAlert if |d| > threshold
+```
+
+`DivergenceAlert` is a structured record (operation_index, step_index,
+sim_ee_pose, real_ee_pose, distance_m), collected on
+`ArbiterResult.divergence_alerts`. Not raised — observation, not
+failure. Caller decides whether to log, halt downstream, alert ops, etc.
+
+`RealStubBackend.position_bias_m` simulates a real-hardware calibration
+offset DT does not model. `examples/09_shadow_mode.py` demos: bias=3cm
+in X, threshold=2cm → all 8 steps fire alerts at exactly ~3cm. This is
+the "DT catches what real hardware diverges from the model" story for
+the second-half value claim ("DT is useful for real experiments").
+
+Phase 2: shadow mode against REAL Matterix vs. real Franka would be
+the natural next step — the architecture supports it (just swap
+sim_backend to real-Matterix-via-MatterixWorkflowRunner, and
+real_backend to a real-Franka driver).
+
 ## Decisions made under deferred verification
 
 These are recorded so a human can quickly audit them once Matterix is
