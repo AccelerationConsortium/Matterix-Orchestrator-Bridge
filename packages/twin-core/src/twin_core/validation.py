@@ -30,7 +30,11 @@ from twin_core.protocols import FrameService
 # Frame-type policy: which frame names a primitive is allowed to target.
 # Tightening or relaxing happens here, not at every call site.
 PICK_OBJECT_ALLOWED_FRAMES: frozenset[str] = frozenset({"grasp"})
-PLACE_AT_FRAME_PREFIX: str = "dropoff_"
+# place_at: the canonical Matterix convention is "place" (PlaceObjectCfg
+# always targets pre_place + place on the asset). The "dropoff_" prefix
+# is also accepted to support fake-sim demos with multi-slot tables.
+PLACE_AT_ALLOWED_FRAMES: frozenset[str] = frozenset({"place"})
+PLACE_AT_ALLOWED_PREFIX: str = "dropoff_"
 
 
 @dataclass(frozen=True)
@@ -90,17 +94,31 @@ def schema_check(workflow: WorkflowDict) -> CheckResult:
                 )
                 return CheckResult.failing(err, step_index=index, plan_segment=_segment(step))
         elif step.primitive == "place_at":
-            if step.target_frame is None or not step.target_frame.startswith(
-                PLACE_AT_FRAME_PREFIX
-            ):
+            tf = step.target_frame
+            ok = tf is not None and (
+                tf in PLACE_AT_ALLOWED_FRAMES or tf.startswith(PLACE_AT_ALLOWED_PREFIX)
+            )
+            if not ok:
                 err = SchemaError(
-                    f"place_at target_frame must start with "
-                    f"{PLACE_AT_FRAME_PREFIX!r}, got {step.target_frame!r}"
+                    f"place_at target_frame must be in "
+                    f"{sorted(PLACE_AT_ALLOWED_FRAMES)} or start with "
+                    f"{PLACE_AT_ALLOWED_PREFIX!r}, got {tf!r}"
                 )
                 return CheckResult.failing(err, step_index=index, plan_segment=_segment(step))
         elif step.primitive == "move":
             if step.target_pose is None:
                 err = SchemaError("move requires target_pose")
+                return CheckResult.failing(err, step_index=index, plan_segment=_segment(step))
+        elif step.primitive == "heat":
+            if not step.target_object:
+                err = SchemaError("heat requires target_object (heater asset)")
+                return CheckResult.failing(err, step_index=index, plan_segment=_segment(step))
+            tt = step.extras.get("target_temperature_k")
+            ds = step.extras.get("duration_s")
+            if not isinstance(tt, (int, float)) or not isinstance(ds, (int, float)):
+                err = SchemaError(
+                    "heat extras must include target_temperature_k (K) and duration_s"
+                )
                 return CheckResult.failing(err, step_index=index, plan_segment=_segment(step))
         else:
             err = SchemaError(f"unknown primitive: {step.primitive!r}")
@@ -154,7 +172,7 @@ def state_check(
                 )
                 return CheckResult.failing(err, step_index=index, plan_segment=_segment(step))
             closed = False
-        # 'move' has no gripper effect
+        # 'move' and 'heat' have no gripper effect
     return CheckResult.passing()
 
 

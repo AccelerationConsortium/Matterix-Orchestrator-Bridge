@@ -55,9 +55,9 @@ def report(label: str, result) -> None:
 def main() -> None:
     plan = [
         PickAndPlace(
-            source_object="beaker_500ml",
+            source_object="beaker",
             source_frame="grasp",
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_a1",
         )
     ]

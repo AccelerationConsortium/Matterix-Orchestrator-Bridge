@@ -78,8 +78,8 @@ def main() -> None:
 
     # The stock beaker-lift task only registers a `pickup_beaker` workflow
     # (no place). For the smoke test, drive a single pick_object step via
-    # the runner; place_at would require a task that has a dropoff frame
-    # configured on the optical_table asset.
+    # the runner; place_at would require a task that has a place target
+    # asset (e.g. hotplate / IKA-plate) with pre_place + place frames.
     op = PickAndPlace(
         source_object=args.target_object,
         source_frame="grasp",

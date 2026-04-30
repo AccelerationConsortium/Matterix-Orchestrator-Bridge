@@ -27,9 +27,9 @@ def main() -> None:
     print(f"reset → ee={obs.ee_pose.position}")
 
     op = PickAndPlace(
-        source_object="beaker_500ml",
+        source_object="beaker",
         source_frame="grasp",
-        target_object="optical_table",
+        target_object="table",
         target_frame="dropoff_a1",
     )
     workflow = operation_to_workflow(op)
@@ -45,7 +45,7 @@ def main() -> None:
             f"gripper_closed={obs.gripper_closed}"
         )
 
-    beaker = obs.asset_frames.get("beaker_500ml", {}).get("world")
+    beaker = obs.asset_frames.get("beaker", {}).get("world")
     if beaker:
         print(f"final beaker world pose: {tuple(round(c, 3) for c in beaker.position)}")
     backend.close()

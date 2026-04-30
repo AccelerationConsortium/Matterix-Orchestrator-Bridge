@@ -80,6 +80,91 @@ Matterix README badges only list `linux-64` and `windows-64`. Mac
 cross-platform (we built and tested on darwin). Real Matterix execution
 must happen on a Linux box.
 
+## Asset reality vs the bridge's frame service
+
+Inspected `AccelerationConsortium/Matterix_assets` and the stock
+`test_franka_beaker_lift` task config on 2026-04-30. Findings below.
+
+### Asset inventory (only 5 USD assets exist)
+
+| Type | Asset | bridge name | notes |
+|------|-------|-------------|-------|
+| labware | `beaker500ml` | `beaker` | scene-key in stock task. Has `pre_grasp` / `grasp` / `post_grasp` frames (object-local) |
+| infrastructure | `table-thorlabs-75x90` | `table` | scene-key in stock task. **No dropoff frames declared** |
+| equipment | `IKA-plate-inst` | `hotplate` | not in stock task; needs new task config to use |
+| equipment | `scale-IKA` | (unused) | not in stock task |
+| robots | `franka-robotiq85` | `robot` | scene-key in stock task |
+
+**Updated `StaticFrameService.default_for_demo()`** to use the real
+scene-keys (`beaker`, `table`, `hotplate`) instead of the placeholder
+names (`beaker_500ml`, `optical_table`). This means `examples/06`'s
+default `--target_object beaker` matches the stock task on first run.
+
+### Frame conventions
+
+Real Matterix frame naming as observed:
+- `pick_object` target: always `grasp` (with `pre_grasp` / `post_grasp` for the lift).
+- `place_at` target: always `place` (with `pre_place`). PlaceObjectCfg
+  hard-codes these names — they MUST exist on the asset USD.
+- `dropoff_*`: **not a Matterix convention**. It's our fake-sim multi-slot
+  shorthand. The schema_check policy now allows BOTH `place` (Matterix
+  canonical) and `dropoff_*` prefix (fake-sim demos).
+
+### sdl1chem catalogue is a different physical stack
+
+Inspected `AccelerationConsortium/sdl1chem` UO catalogue (31 UOs). It
+targets **OT-2 robot + PLC pumps + Squidstat potentiostat + relays** —
+none of which exist in Matterix. The bridge does NOT mirror these UOs
+because they have no Matterix asset to act on. The pattern is what the
+bridge follows: each UO is a typed input + typed output, decorated
+function. We stay aligned with that pattern; we don't depend on the
+specific hardware vocabulary.
+
+Phase-2 question: if a future SDL stack uses Franka + beaker (i.e.,
+shares Matterix's hardware), should we wrap matching sdl1chem-style UOs
+into the bridge for direct compatibility? Currently undecided — answer
+depends on whether `uostore` becomes the standard UO framework.
+
+## Workflow-level vs per-step path (clarification)
+
+The user's question "Is StateMachine the connection entry point?" — yes.
+
+Two execution paths now coexist:
+
+```
+                   ┌──────────────────────────────────────┐
+                   │  Mock / RealStub / FakeMatterixEnv   │
+                   │  (per-step)                          │
+PickAndPlace ──┐   │  Action.step(action) loop            │
+               │   └──────────────▲───────────────────────┘
+WorkflowDict───┤                  │ Action[]
+               │                  │ via lower_workflow()
+Heat ──────────┘                  │
+               │   ┌──────────────┴───────────────────────┐
+               │   │  Real Matterix env                   │
+               │   │  (workflow-level)                    │
+               │   │  matterix_sm.StateMachine.step(obs)  │
+               │   │  loop                                │
+               └──>│  via MatterixWorkflowRunner          │
+                   │  CompositionalActionCfg[] / Cfg[]    │
+                   └──────────────────────────────────────┘
+```
+
+`MatterixWorkflowRunner.set_action_sequence(...)` is the literal
+connection point (the line that hands our translated configs to the
+real Matterix StateMachine).
+
+## UnitOperations now defined
+
+| UO | Inputs | Outputs (observable side-effect) | Matterix mapping |
+|----|--------|----------------------------------|------------------|
+| `PickAndPlace` | source_object, source_frame, target_object, target_frame | beaker moved to target | `PickObjectCfg` → `PlaceObjectCfg` |
+| `Heat` | asset_name, target_temperature_k, duration_s | heater state change (IsHeaterOn) | `TurnOnHeaterCfg(on)` → `WaitCfg` → `TurnOnHeaterCfg(off)` |
+
+Adding a new UO is: dataclass + extend `operation_to_workflow` + extend
+`_step_to_matterix_cfg` + (optional) extend `lower_workflow` for the
+per-step path. Roughly 30-50 lines of code per UO.
+
 ## Decisions made under deferred verification
 
 These are recorded so a human can quickly audit them once Matterix is

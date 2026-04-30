@@ -22,7 +22,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 GripperCommand = Literal["open", "close"]
-PrimitiveName = Literal["pick_object", "move", "place_at"]
+PrimitiveName = Literal["pick_object", "move", "place_at", "heat"]
 
 
 class Pose(BaseModel):

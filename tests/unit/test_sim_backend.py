@@ -14,7 +14,7 @@ def test_sim_backend_translates_observation() -> None:
     assert obs.gripper_closed is False
     # FakeMatterixEnv reports gripper_width 0.085 when open.
     assert obs.gripper_width == 0.085
-    assert "beaker_500ml" in obs.asset_frames
+    assert "beaker" in obs.asset_frames
 
 
 def test_sim_backend_moves_ee_via_action() -> None:
@@ -28,14 +28,14 @@ def test_sim_backend_moves_ee_via_action() -> None:
 def test_fake_env_grasps_beaker_when_close_and_gripper_closes() -> None:
     backend = SimBackend(FakeMatterixEnv())
     backend.reset()
-    # Move ee to grasp pose (where beaker_500ml lives), then close gripper.
-    backend.step(Action(target_pose=Pose(position=(0.4, 0.0, 0.10))))
+    # Move ee to grasp pose (where the beaker lives), then close gripper.
+    backend.step(Action(target_pose=Pose(position=(0.60, 0.05, 0.10))))
     obs = backend.step(Action(gripper_command="close"))
     assert obs.gripper_closed is True
 
     # Now move ee — beaker should follow.
     obs = backend.step(Action(target_pose=Pose(position=(0.5, 0.0, 0.30))))
-    beaker_world = obs.asset_frames["beaker_500ml"]["world"]
+    beaker_world = obs.asset_frames["beaker"]["world"]
     assert beaker_world.position == (0.5, 0.0, 0.30)
 
 
@@ -57,9 +57,9 @@ def test_dry_run_returns_ok_for_clean_workflow() -> None:
     frames = StaticFrameService.default_for_demo()
     workflow = operation_to_workflow(
         PickAndPlace(
-            source_object="beaker_500ml",
+            source_object="beaker",
             source_frame="grasp",
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_a1",
         )
     )
@@ -80,9 +80,9 @@ def test_dry_run_catches_physical_infeasibility() -> None:
     frames = StaticFrameService.default_for_demo()
     workflow = operation_to_workflow(
         PickAndPlace(
-            source_object="beaker_500ml",
+            source_object="beaker",
             source_frame="grasp",
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_a1",
         )
     )

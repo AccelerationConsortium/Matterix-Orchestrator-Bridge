@@ -41,9 +41,9 @@ def main() -> None:
     print(f"reset → ee={obs.ee_pose.position} gripper_closed={obs.gripper_closed}")
 
     op = PickAndPlace(
-        source_object="beaker_500ml",
+        source_object="beaker",
         source_frame="grasp",
-        target_object="optical_table",
+        target_object="table",
         target_frame="dropoff_a1",
     )
     workflow = operation_to_workflow(op)

@@ -15,9 +15,9 @@ def test_orchestrator_run_completes_with_mock_backend() -> None:
     record = orch.run(
         [
             PickAndPlace(
-                source_object="beaker_500ml",
+                source_object="beaker",
                 source_frame="grasp",
-                target_object="optical_table",
+                target_object="table",
                 target_frame="dropoff_a1",
             )
         ]
@@ -34,16 +34,16 @@ def test_orchestrator_grips_beaker_in_sim() -> None:
     record = orch.run(
         [
             PickAndPlace(
-                source_object="beaker_500ml",
+                source_object="beaker",
                 source_frame="grasp",
-                target_object="optical_table",
+                target_object="table",
                 target_frame="dropoff_a1",
             )
         ]
     )
     # After full PickAndPlace, beaker should have moved to near dropoff_a1.
     final_obs = record.steps[-1].observation
-    beaker_world = final_obs.asset_frames["beaker_500ml"]["world"]
+    beaker_world = final_obs.asset_frames["beaker"]["world"]
     # dropoff_a1 is at (0.6, 0.2, 0.10) in the demo registry.
     assert abs(beaker_world.position[0] - 0.6) < 0.05
     assert abs(beaker_world.position[1] - 0.2) < 0.05

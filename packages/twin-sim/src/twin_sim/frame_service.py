@@ -32,19 +32,35 @@ class StaticFrameService:
 
     @classmethod
     def default_for_demo(cls) -> "StaticFrameService":
-        """Stock Matterix demo assets (beaker_500ml + optical_table).
+        """Stock Matterix demo assets — names match scene keys in
+        `test_franka_beaker_lift.py`: 'beaker', 'table', plus
+        'hotplate' (for the IKA-plate when added to a task).
 
-        Frame conventions per plan §5/A4: pre_grasp/grasp/post_grasp on
-        the manipulated object; dropoff_* on the surface.
+        Frame conventions:
+          * On manipulated objects (beaker): pre_grasp/grasp/post_grasp.
+            Frame *names* match BEAKER_500ML_INST_CFG; coordinates here
+            are world-space placeholders for fake-sim. Real Matterix
+            resolves these from object-local frames at runtime.
+          * On placement targets (hotplate): pre_place/place — matches
+            PlaceObjectCfg's hard-coded frame names.
+          * On the table: dropoff_* slots are fake-sim-only (the stock
+            table-thorlabs USD does NOT declare these). Used by the
+            existing safety demo to keep fake-sim runs working.
         """
         return cls(
             registry={
-                "beaker_500ml": {
-                    "pre_grasp": Pose(position=(0.40, 0.00, 0.20)),
-                    "grasp": Pose(position=(0.40, 0.00, 0.10)),
-                    "post_grasp": Pose(position=(0.40, 0.00, 0.30)),
+                "beaker": {
+                    "pre_grasp": Pose(position=(0.60, 0.05, 0.20)),
+                    "grasp": Pose(position=(0.60, 0.05, 0.10)),
+                    "post_grasp": Pose(position=(0.60, 0.05, 0.30)),
                 },
-                "optical_table": {
+                "hotplate": {
+                    "pre_place": Pose(position=(0.40, -0.20, 0.30)),
+                    "place": Pose(position=(0.40, -0.20, 0.15)),
+                },
+                "table": {
+                    # Fake-sim-only multi-slot dropoff. Real
+                    # table-thorlabs USD does not have these.
                     "dropoff_a1": Pose(position=(0.60, 0.20, 0.10)),
                     "dropoff_a2": Pose(position=(0.60, 0.30, 0.10)),
                     "pre_dropoff_a1": Pose(position=(0.60, 0.20, 0.30)),

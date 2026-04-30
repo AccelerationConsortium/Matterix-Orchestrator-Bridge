@@ -32,6 +32,8 @@ def _lower_step(step: WorkflowStep, frames: FrameService) -> list[Action]:
         return _lower_place(step, frames)
     if step.primitive == "move":
         return _lower_move(step)
+    if step.primitive == "heat":
+        return _lower_heat(step)
     raise SchemaError(f"Unknown primitive: {step.primitive!r}")
 
 
@@ -72,3 +74,31 @@ def _lower_move(step: WorkflowStep) -> list[Action]:
     if step.target_pose is None:
         raise SchemaError("primitive 'move' requires target_pose")
     return [Action(target_pose=step.target_pose, extras={"phase": "move"})]
+
+
+def _lower_heat(step: WorkflowStep) -> list[Action]:
+    """Heat is a semantic action — no robot motion. Emits a single
+    no-op Action carrying the heater details in extras so fake-sim
+    runs (and tests / audit logs) can see that heat happened.
+    """
+    if not step.target_object:
+        raise SchemaError("primitive 'heat' requires target_object (heater asset)")
+    target_temp_k = step.extras.get("target_temperature_k")
+    duration_s = step.extras.get("duration_s")
+    if not isinstance(target_temp_k, (int, float)) or not isinstance(
+        duration_s, (int, float)
+    ):
+        raise SchemaError(
+            "primitive 'heat' requires extras "
+            "{'target_temperature_k': float, 'duration_s': float}"
+        )
+    return [
+        Action(
+            extras={
+                "phase": "heat",
+                "asset_name": step.target_object,
+                "target_temperature_k": float(target_temp_k),
+                "duration_s": float(duration_s),
+            }
+        )
+    ]

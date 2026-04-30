@@ -76,7 +76,14 @@ class MatterixWorkflowRunner:
                 "matterix_sm + torch required for MatterixWorkflowRunner"
             ) from exc
 
-        actions = [self._step_to_matterix_cfg(s) for s in workflow]
+        # Each step lowers to one or more matterix_sm Cfgs (heat → 3 cfgs).
+        actions: list[Any] = []
+        for step in workflow:
+            cfgs = self._step_to_matterix_cfg(step)
+            if isinstance(cfgs, list):
+                actions.extend(cfgs)
+            else:
+                actions.append(cfgs)
 
         sm = StateMachine(
             num_envs=self.env.num_envs,
@@ -148,14 +155,57 @@ class MatterixWorkflowRunner:
         if step.primitive == "place_at":
             if not step.target_object:
                 raise SchemaError("place_at requires target_object")
+            # PlaceObjectCfg uses `target=`, not `object=`. The cfg
+            # internally always targets the asset's `pre_place` + `place`
+            # frames — `target_frame` on our WorkflowStep is therefore
+            # informational only (used by fake sim, ignored here).
             return PlaceObjectCfg(
                 agent_assets=self.robot_asset,
-                object=step.target_object,
+                target=step.target_object,
                 action_space_info=FRANKA_IK_ACTION_SPACE,
             )
+        if step.primitive == "heat":
+            return self._heat_step_to_cfgs(step)
         raise SchemaError(
             f"primitive {step.primitive!r} has no matterix_sm mapping"
         )
+
+    def _heat_step_to_cfgs(self, step: WorkflowStep) -> list[Any]:
+        """Translate a single 'heat' WorkflowStep to a 3-Cfg sequence.
+
+        Returns [TurnOnHeaterCfg(on, with target_temp), WaitCfg(duration),
+        TurnOnHeaterCfg(off)] — the canonical pattern from
+        `matterix_sm.semantic_actions.heater_action` docstring.
+        """
+        try:
+            from matterix_sm import (  # type: ignore[import-not-found]
+                TurnOnHeaterCfg,
+                WaitCfg,
+            )
+        except ImportError as exc:  # pragma: no cover - runtime-only
+            raise SimRuntimeUnavailable("matterix_sm required") from exc
+
+        if not step.target_object:
+            raise SchemaError("heat requires target_object (the heater asset name)")
+        target_temp_k = step.extras.get("target_temperature_k")
+        duration_s = step.extras.get("duration_s")
+        if not isinstance(target_temp_k, (int, float)):
+            raise SchemaError(
+                "heat extras must include 'target_temperature_k' (Kelvin)"
+            )
+        if not isinstance(duration_s, (int, float)):
+            raise SchemaError(
+                "heat extras must include 'duration_s' (seconds)"
+            )
+        return [
+            TurnOnHeaterCfg(
+                asset_name=step.target_object,
+                value=True,
+                target_temperature=float(target_temp_k),
+            ),
+            WaitCfg(duration=float(duration_s)),
+            TurnOnHeaterCfg(asset_name=step.target_object, value=False),
+        ]
 
     # -- translation: Matterix obs → twin Observation ------------------
 

@@ -24,9 +24,9 @@ def _frames() -> StaticFrameService:
 def test_schema_check_passes_for_clean_workflow() -> None:
     workflow = operation_to_workflow(
         PickAndPlace(
-            source_object="beaker_500ml",
+            source_object="beaker",
             source_frame="grasp",
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_a1",
         )
     )
@@ -36,9 +36,9 @@ def test_schema_check_passes_for_clean_workflow() -> None:
 def test_schema_check_rejects_disallowed_pick_frame() -> None:
     workflow = operation_to_workflow(
         PickAndPlace(
-            source_object="beaker_500ml",
+            source_object="beaker",
             source_frame="post_grasp",
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_a1",
         )
     )
@@ -50,10 +50,10 @@ def test_schema_check_rejects_disallowed_pick_frame() -> None:
 
 def test_schema_check_rejects_bad_place_prefix() -> None:
     workflow = [
-        WorkflowStep(primitive="pick_object", target_object="beaker_500ml", target_frame="grasp"),
+        WorkflowStep(primitive="pick_object", target_object="beaker", target_frame="grasp"),
         WorkflowStep(
             primitive="place_at",
-            target_object="optical_table",
+            target_object="table",
             target_frame="random_frame",
         ),
     ]
@@ -68,10 +68,10 @@ def test_schema_check_rejects_bad_place_prefix() -> None:
 
 def test_frame_check_catches_missing_dropoff_frame() -> None:
     workflow = [
-        WorkflowStep(primitive="pick_object", target_object="beaker_500ml", target_frame="grasp"),
+        WorkflowStep(primitive="pick_object", target_object="beaker", target_frame="grasp"),
         WorkflowStep(
             primitive="place_at",
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_zz",
         ),
     ]
@@ -85,8 +85,8 @@ def test_frame_check_catches_missing_dropoff_frame() -> None:
 
 def test_state_check_catches_double_pick() -> None:
     workflow = [
-        WorkflowStep(primitive="pick_object", target_object="beaker_500ml", target_frame="grasp"),
-        WorkflowStep(primitive="pick_object", target_object="beaker_500ml", target_frame="grasp"),
+        WorkflowStep(primitive="pick_object", target_object="beaker", target_frame="grasp"),
+        WorkflowStep(primitive="pick_object", target_object="beaker", target_frame="grasp"),
     ]
     result = state_check(workflow)
     assert not result.ok
@@ -97,7 +97,7 @@ def test_state_check_catches_double_pick() -> None:
 def test_state_check_catches_place_without_pick() -> None:
     workflow = [
         WorkflowStep(
-            primitive="place_at", target_object="optical_table", target_frame="dropoff_a1"
+            primitive="place_at", target_object="table", target_frame="dropoff_a1"
         )
     ]
     result = state_check(workflow)
@@ -111,9 +111,9 @@ def test_state_check_catches_place_without_pick() -> None:
 def test_preflight_passes_for_clean_workflow() -> None:
     workflow = operation_to_workflow(
         PickAndPlace(
-            source_object="beaker_500ml",
+            source_object="beaker",
             source_frame="grasp",
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_a1",
         )
     )
@@ -125,9 +125,9 @@ def test_preflight_returns_first_failure_only() -> None:
     # we expect schema to win because it runs first.
     workflow = operation_to_workflow(
         PickAndPlace(
-            source_object="beaker_500ml",
+            source_object="beaker",
             source_frame="post_grasp",  # schema reject
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_zz",  # would-be frame_check reject
         )
     )

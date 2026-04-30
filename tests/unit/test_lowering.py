@@ -21,9 +21,9 @@ def _frames() -> StaticFrameService:
 
 def test_lower_pickandplace_emits_eight_actions() -> None:
     op = PickAndPlace(
-        source_object="beaker_500ml",
+        source_object="beaker",
         source_frame="grasp",
-        target_object="optical_table",
+        target_object="table",
         target_frame="dropoff_a1",
     )
     actions = lower_workflow(operation_to_workflow(op), _frames())
@@ -52,7 +52,7 @@ def test_lower_pick_with_missing_frame_raises_frame_not_found() -> None:
     workflow = [
         WorkflowStep(
             primitive="pick_object",
-            target_object="beaker_500ml",
+            target_object="beaker",
             target_frame="non_existent_frame",
         )
     ]

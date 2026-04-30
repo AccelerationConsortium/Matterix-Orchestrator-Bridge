@@ -17,9 +17,9 @@ def _frames() -> StaticFrameService:
 def _clean_plan() -> list[PickAndPlace]:
     return [
         PickAndPlace(
-            source_object="beaker_500ml",
+            source_object="beaker",
             source_frame="grasp",
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_a1",
         )
     ]
@@ -92,9 +92,9 @@ def test_sim_first_blocks_real_when_sim_fails() -> None:
 def test_preflight_failure_halts_before_any_backend() -> None:
     bad_plan = [
         PickAndPlace(
-            source_object="beaker_500ml",
+            source_object="beaker",
             source_frame="post_grasp",  # schema reject
-            target_object="optical_table",
+            target_object="table",
             target_frame="dropoff_a1",
         )
     ]

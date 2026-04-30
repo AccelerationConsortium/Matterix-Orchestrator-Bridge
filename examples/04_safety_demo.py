@@ -46,27 +46,27 @@ def build_cases() -> list[DemoCase]:
             description="schema violation — pick_object frame must be 'grasp'",
             workflow=operation_to_workflow(
                 PickAndPlace(
-                    source_object="beaker_500ml",
+                    source_object="beaker",
                     source_frame="post_grasp",  # not in PICK_OBJECT_ALLOWED_FRAMES
-                    target_object="optical_table",
+                    target_object="table",
                     target_frame="dropoff_a1",
                 )
             ),
         ),
         DemoCase(
             name="WF2",
-            description="frame not found — beaker_500ml has no 'lid' frame",
+            description="frame not found — table has no 'dropoff_z9' slot",
             workflow=[
                 # We bypass operation_to_workflow to cleanly target the
                 # frame-existence check without tripping the schema layer.
                 WorkflowStep(
                     primitive="pick_object",
-                    target_object="beaker_500ml",
+                    target_object="beaker",
                     target_frame="grasp",
                 ),
                 WorkflowStep(
                     primitive="place_at",
-                    target_object="optical_table",
+                    target_object="table",
                     target_frame="dropoff_z9",  # not declared
                 ),
             ],
@@ -76,9 +76,9 @@ def build_cases() -> list[DemoCase]:
             description="physical infeasibility — dropoff_a1 inside no-go region",
             workflow=operation_to_workflow(
                 PickAndPlace(
-                    source_object="beaker_500ml",
+                    source_object="beaker",
                     source_frame="grasp",
-                    target_object="optical_table",
+                    target_object="table",
                     target_frame="dropoff_a1",
                 )
             ),
@@ -89,9 +89,9 @@ def build_cases() -> list[DemoCase]:
             description="clean — should pass every check",
             workflow=operation_to_workflow(
                 PickAndPlace(
-                    source_object="beaker_500ml",
+                    source_object="beaker",
                     source_frame="grasp",
-                    target_object="optical_table",
+                    target_object="table",
                     target_frame="dropoff_a2",
                 )
             ),

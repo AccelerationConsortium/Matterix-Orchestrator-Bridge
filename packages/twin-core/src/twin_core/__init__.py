@@ -14,6 +14,7 @@ from twin_core.errors import (
 )
 from twin_core.lowering import lower_workflow
 from twin_core.operations import (
+    Heat,
     PickAndPlace,
     UnitOperation,
     WorkflowDict,
@@ -46,6 +47,7 @@ __all__ = [
     "FrameNotFound",
     "FrameService",
     "GripperCommand",
+    "Heat",
     "MiniOrchestrator",
     "Mode",
     "Observation",

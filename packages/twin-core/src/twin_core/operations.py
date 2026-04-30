@@ -31,6 +31,24 @@ class PickAndPlace(UnitOperation):
     target_frame: str
 
 
+@dataclass(frozen=True)
+class Heat(UnitOperation):
+    """Turn a heater asset on, wait, then turn it off.
+
+    Maps to matterix_sm's canonical 3-step pattern:
+      TurnOnHeaterCfg(value=True, target_temperature=...) →
+      WaitCfg(duration=...) →
+      TurnOnHeaterCfg(value=False)
+
+    Inputs are typed for the SDL side; outputs (semantic state change)
+    are observable via the env's IsHeaterOn predicate after run.
+    """
+
+    asset_name: str               # heater asset (e.g., "hotplate")
+    target_temperature_k: float   # Kelvin (373.15 = 100°C)
+    duration_s: float             # how long to hold the on-state
+
+
 WorkflowDict = list[WorkflowStep]
 
 
@@ -38,7 +56,8 @@ def operation_to_workflow(op: UnitOperation) -> WorkflowDict:
     """Translate a UnitOperation into a backend-executable workflow.
 
     Emits WorkflowStep primitives. Each backend (sim, real-stub) is
-    responsible for translating these into low-level Action sequences.
+    responsible for translating these into low-level Action sequences
+    (motion) or matterix_sm semantic Cfgs (e.g., Heat).
     """
     if isinstance(op, PickAndPlace):
         return [
@@ -51,6 +70,17 @@ def operation_to_workflow(op: UnitOperation) -> WorkflowDict:
                 primitive="place_at",
                 target_object=op.target_object,
                 target_frame=op.target_frame,
+            ),
+        ]
+    if isinstance(op, Heat):
+        return [
+            WorkflowStep(
+                primitive="heat",
+                target_object=op.asset_name,
+                extras={
+                    "target_temperature_k": op.target_temperature_k,
+                    "duration_s": op.duration_s,
+                },
             ),
         ]
     raise NotImplementedError(f"No translator for {type(op).__name__}")

@@ -71,7 +71,7 @@ class FakeMatterixEnv:
         default_factory=lambda: Pose(position=(0.0, 0.0, 0.5))
     )
     object_world_poses: dict[str, Pose] = field(
-        default_factory=lambda: {"beaker_500ml": Pose(position=(0.4, 0.0, 0.10))}
+        default_factory=lambda: {"beaker": Pose(position=(0.60, 0.05, 0.10))}
     )
     grasp_radius: float = 0.03
     nogo_aabb: tuple[tuple[float, float, float], tuple[float, float, float]] | None = (
