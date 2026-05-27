@@ -30,6 +30,11 @@ from twin_core.validation import (
     state_check,
 )
 from twin_core.safety import SafetySignal
+from twin_core.result_schema import (
+    batch_run_to_dict,
+    shadow_run_to_dict,
+    single_run_to_dict,
+)
 from twin_core.schemas import (
     Action,
     GripperCommand,
@@ -44,6 +49,9 @@ __all__ = [
     "Arbiter",
     "SafetySignal",
     "ArbiterResult",
+    "batch_run_to_dict",
+    "shadow_run_to_dict",
+    "single_run_to_dict",
     "CheckResult",
     "DivergenceAlert",
     "ExecutorBackend",
