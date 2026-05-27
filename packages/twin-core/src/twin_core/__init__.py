@@ -29,6 +29,7 @@ from twin_core.validation import (
     schema_check,
     state_check,
 )
+from twin_core.safety import SafetySignal
 from twin_core.schemas import (
     Action,
     GripperCommand,
@@ -41,6 +42,7 @@ from twin_core.schemas import (
 __all__ = [
     "Action",
     "Arbiter",
+    "SafetySignal",
     "ArbiterResult",
     "CheckResult",
     "DivergenceAlert",
