@@ -17,6 +17,28 @@ uv run pytest
 uv run python examples/00_hello_mock.py
 ```
 
+## Orchestrator JSON → Matterix demo
+
+The real-Matterix heat-transfer demo now reads a workflow JSON instead of
+hard-coding UnitOperations in Python:
+
+```bash
+uv run python examples/07_heat_workflow.py
+# On a Linux lab machine with Isaac Lab + Matterix installed:
+python -m pip install -e packages/twin-core -e packages/twin-sim
+python examples/08_run_real_matterix_heat.py --headless
+```
+
+Example JSON: `examples/workflows/matterix_heat_workflow.json`.
+
+Mapping chain:
+
+```text
+workflow JSON → UnitOperation → WorkflowStep → matterix_sm Cfg → StateMachine
+```
+
+See `docs/workflow-json-mapping.md` for file-level pointers.
+
 ## Layout
 
 ```

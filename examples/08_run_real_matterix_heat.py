@@ -45,6 +45,10 @@ can — i.e., the SDL-side abstraction is faithful to the DT side.
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
+
+
+DEFAULT_WORKFLOW_JSON = Path(__file__).parent / "workflows" / "matterix_heat_workflow.json"
 
 
 def main() -> None:
@@ -57,22 +61,19 @@ def main() -> None:
         help="Matterix task with beaker + ika_plate + Franka.",
     )
     parser.add_argument(
-        "--target_temp_k",
-        type=float,
-        default=373.15,
-        help="Heater setpoint in Kelvin (373.15 = 100°C).",
-    )
-    parser.add_argument(
-        "--heat_duration_s",
-        type=float,
-        default=5.0,
-        help="Seconds to hold the heater on.",
-    )
-    parser.add_argument(
         "--num_envs",
         type=int,
         default=1,
         help="Parallel envs (smoke = 1).",
+    )
+    parser.add_argument(
+        "--workflow_json",
+        type=Path,
+        default=DEFAULT_WORKFLOW_JSON,
+        help=(
+            "Bridge workflow JSON to translate into Matterix cfgs "
+            f"(default: {DEFAULT_WORKFLOW_JSON})"
+        ),
     )
     AppLauncher.add_app_launcher_args(parser)
     args = parser.parse_args()
@@ -80,7 +81,7 @@ def main() -> None:
     app_launcher = AppLauncher(headless=args.headless)
     simulation_app = app_launcher.app
 
-    from twin_core import Heat, PickAndPlace, operation_to_workflow
+    from twin_core import load_operations_json
     from twin_sim import MatterixWorkflowRunner, make_real_env
 
     print(f"[heat-demo] launching task={args.task!r} num_envs={args.num_envs}")
@@ -95,26 +96,17 @@ def main() -> None:
         f"step_dt={env.step_dt} device={env.device}"
     )
 
-    plan = [
-        PickAndPlace(
-            source_object="beaker",
-            source_frame="grasp",
-            target_object="ika_plate",
-            target_frame="place",
-        ),
-        Heat(
-            asset_name="ika_plate",
-            target_temperature_k=args.target_temp_k,
-            duration_s=args.heat_duration_s,
-        ),
-    ]
+    loaded_workflow = load_operations_json(args.workflow_json)
+    workflow = loaded_workflow.to_workflow_steps()
 
-    workflow = []
-    for op in plan:
-        workflow.extend(operation_to_workflow(op))
-
-    print(f"[heat-demo] bridge translated {len(plan)} UO(s) → "
-          f"{len(workflow)} workflow step(s)")
+    print(
+        f"[heat-demo] loaded workflow={loaded_workflow.name!r} "
+        f"from {args.workflow_json}"
+    )
+    print(
+        f"[heat-demo] bridge translated {len(loaded_workflow.operations)} "
+        f"operation(s) → {len(workflow)} workflow step(s)"
+    )
 
     runner = MatterixWorkflowRunner(env=env, robot_asset="robot")
     print("[heat-demo] running on real Matterix...")

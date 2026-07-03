@@ -40,6 +40,13 @@ from twin_core.workflow_parser import (
     ParsedWorkflow,
     parse_workflow_json,
 )
+from twin_core.workflow_loader import (
+    LoadedOperation,
+    LoadedWorkflow,
+    WorkflowJsonError,
+    load_operations_json,
+    load_workflow_steps_json,
+)
 from twin_core.schemas import (
     Action,
     GripperCommand,
@@ -60,6 +67,11 @@ __all__ = [
     "ParsedStep",
     "ParsedWorkflow",
     "parse_workflow_json",
+    "LoadedOperation",
+    "LoadedWorkflow",
+    "WorkflowJsonError",
+    "load_operations_json",
+    "load_workflow_steps_json",
     "CheckResult",
     "DivergenceAlert",
     "ExecutorBackend",

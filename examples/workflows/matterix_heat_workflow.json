@@ -1,0 +1,26 @@
+{
+  "workflow_name": "matterix-heat-transfer-demo",
+  "version": "1.0",
+  "description": "Bridge JSON demo: PickAndPlace(beaker -> ika_plate@place) followed by Heat(ika_plate). The Python example loads this file, translates operations to WorkflowStep primitives, then maps those primitives to matterix_sm Cfgs.",
+  "operations": [
+    {
+      "operation_id": "pick_beaker_to_plate",
+      "operation": "pick_and_place",
+      "params": {
+        "source_object": "beaker",
+        "source_frame": "grasp",
+        "target_object": "ika_plate",
+        "target_frame": "place"
+      }
+    },
+    {
+      "operation_id": "heat_ika_plate",
+      "operation": "heat",
+      "params": {
+        "asset_name": "ika_plate",
+        "target_temperature_k": 373.15,
+        "duration_s": 5.0
+      }
+    }
+  ]
+}
