@@ -37,6 +37,13 @@ Mapping chain:
 workflow JSON → UnitOperation → WorkflowStep → matterix_sm Cfg → StateMachine
 ```
 
+Diagnose whether the active Python environment can run the real Matterix path:
+
+```bash
+uv run python scripts/check_matterix_env.py
+# Use --strict when missing requirements should fail the command.
+```
+
 See `docs/workflow-json-mapping.md` for file-level pointers.
 
 ## Layout
@@ -67,3 +74,5 @@ docs/
 path (schema/frame validation) and all backends except `twin_sim.runtime`
 work without them. To enable the full Matterix sim path, install per the
 Matterix README — gated import means the rest of the codebase stays usable.
+Run `uv run python scripts/check_matterix_env.py` first when debugging a lab
+machine setup.

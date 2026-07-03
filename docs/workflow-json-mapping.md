@@ -49,3 +49,15 @@ python examples/08_run_real_matterix_heat.py \
   --workflow_json examples/workflows/matterix_heat_workflow.json \
   --headless
 ```
+
+If the real Matterix command does not run, first check the active Python
+environment:
+
+```bash
+uv run python scripts/check_matterix_env.py
+uv run python scripts/check_matterix_env.py --strict
+```
+
+The first command is diagnostic and exits 0 even when Isaac Lab or Matterix is
+missing. `--strict` exits non-zero if a required import or task registration is
+missing.
