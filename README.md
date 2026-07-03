@@ -37,6 +37,13 @@ Mapping chain:
 workflow JSON → UnitOperation → WorkflowStep → matterix_sm Cfg → StateMachine
 ```
 
+Inspect the mapping without Isaac Lab or `matterix_sm`:
+
+```bash
+uv run python examples/inspect_workflow_mapping.py \
+  examples/workflows/matterix_heat_workflow.json
+```
+
 Diagnose whether the active Python environment can run the real Matterix path:
 
 ```bash

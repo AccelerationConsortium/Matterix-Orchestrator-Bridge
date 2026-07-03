@@ -28,6 +28,13 @@ Current JSON operations:
 | `pick_and_place` | `pick_object`, `place_at` | `PickObjectCfg`, `PlaceObjectCfg` |
 | `heat` | `heat` | `TurnOnHeaterCfg(on)`, `WaitCfg`, `TurnOnHeaterCfg(off)` |
 
+Dry-inspect the mapping without importing Isaac Lab or `matterix_sm`:
+
+```bash
+uv run python examples/inspect_workflow_mapping.py \
+  examples/workflows/matterix_heat_workflow.json
+```
+
 Run the fake-sim version:
 
 ```bash
