@@ -52,6 +52,8 @@ uv run python scripts/check_matterix_env.py
 ```
 
 See `docs/workflow-json-mapping.md` for file-level pointers.
+See `docs/sdl1chem-adapter.md` for the adapter from fixed SDL1Chem/Uoroboros
+workflow JSON into bridge UnitOperations.
 
 ## Layout
 

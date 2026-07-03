@@ -47,6 +47,13 @@ from twin_core.workflow_loader import (
     load_operations_json,
     load_workflow_steps_json,
 )
+from twin_core.sdl1chem_adapter import (
+    DEFAULT_SDL1CHEM_UO_MAPPINGS,
+    Sdl1ChemAdapterError,
+    Sdl1ChemBlock,
+    Sdl1ChemWorkflowMapping,
+    load_sdl1chem_workflow_json,
+)
 from twin_core.schemas import (
     Action,
     GripperCommand,
@@ -70,7 +77,12 @@ __all__ = [
     "LoadedOperation",
     "LoadedWorkflow",
     "WorkflowJsonError",
+    "DEFAULT_SDL1CHEM_UO_MAPPINGS",
+    "Sdl1ChemAdapterError",
+    "Sdl1ChemBlock",
+    "Sdl1ChemWorkflowMapping",
     "load_operations_json",
+    "load_sdl1chem_workflow_json",
     "load_workflow_steps_json",
     "CheckResult",
     "DivergenceAlert",

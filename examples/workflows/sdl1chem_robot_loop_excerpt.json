@@ -1,0 +1,68 @@
+{
+  "name": "sdl1chem-robot-loop-excerpt",
+  "version": "1.0.0",
+  "description": "Minimal SDL1Chem/Uoroboros workflow excerpt for adapter inspection.",
+  "blocks": [
+    {
+      "id": "b_setup_experiment",
+      "uo_path": "echem-uos:setup_experiment",
+      "description": "Create experiment directory and metadata.json"
+    },
+    {
+      "id": "b_flush_tool_transfer",
+      "uo_path": "echem-uos:flush_tool_transfer",
+      "description": "Move flush tool from electrode_rack B1 to wash_station B2"
+    },
+    {
+      "id": "b_insert_electrode",
+      "uo_path": "echem-uos:insert_electrode",
+      "description": "Move electrode from wash_station A1 to reactor cell"
+    },
+    {
+      "id": "b_remove_electrode",
+      "uo_path": "echem-uos:remove_electrode",
+      "description": "Remove electrode from reactor cell back to wash_station A1"
+    },
+    {
+      "id": "b_write_loop_results",
+      "uo_path": "echem-uos:write_loop_results",
+      "description": "Persist loop record"
+    }
+  ],
+  "entry": [
+    {
+      "block": "b_setup_experiment",
+      "mappings": []
+    }
+  ],
+  "steps": [
+    {
+      "id": "s_setup_to_flush",
+      "source": "b_setup_experiment",
+      "target": "b_flush_tool_transfer",
+      "condition": "success",
+      "mappings": []
+    },
+    {
+      "id": "s_flush_to_insert",
+      "source": "b_flush_tool_transfer",
+      "target": "b_insert_electrode",
+      "condition": "success",
+      "mappings": []
+    },
+    {
+      "id": "s_insert_to_remove",
+      "source": "b_insert_electrode",
+      "target": "b_remove_electrode",
+      "condition": "success",
+      "mappings": []
+    },
+    {
+      "id": "s_remove_to_write",
+      "source": "b_remove_electrode",
+      "target": "b_write_loop_results",
+      "condition": "success",
+      "mappings": []
+    }
+  ]
+}
