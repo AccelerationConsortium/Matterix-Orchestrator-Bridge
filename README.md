@@ -54,6 +54,8 @@ uv run python scripts/check_matterix_env.py
 See `docs/workflow-json-mapping.md` for file-level pointers.
 See `docs/sdl1chem-adapter.md` for the adapter from fixed SDL1Chem/Uoroboros
 workflow JSON into bridge UnitOperations.
+See `docs/flex-sila-bridge.md` for the workflow-level Opentrons Flex SiLA 2
+adapter, temporary DT deck interface, and offline compatibility checks.
 
 ## Layout
 

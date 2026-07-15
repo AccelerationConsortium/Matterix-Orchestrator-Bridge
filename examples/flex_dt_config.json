@@ -1,0 +1,27 @@
+{
+  "anchors": [
+    {
+      "labware": "tip_rack",
+      "well": "A1",
+      "anchor": "top",
+      "point": {"x": 64.0, "y": 150.0, "z": 100.0},
+      "tip_length_mm": 95.6
+    },
+    {
+      "labware": "source_plate",
+      "well": "A1",
+      "anchor": "top",
+      "point": {"x": 228.0, "y": 150.0, "z": 100.0}
+    },
+    {
+      "labware": "trash",
+      "well": "A1",
+      "anchor": "top",
+      "point": {"x": 392.0, "y": 150.0, "z": 100.0}
+    }
+  ],
+  "instruments": {
+    "p1000_single_gen2": "RIGHT"
+  },
+  "calibration_confirmed": false
+}

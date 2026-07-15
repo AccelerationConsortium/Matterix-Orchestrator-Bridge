@@ -1,0 +1,47 @@
+{
+  "workflow_name": "Flex tip lifecycle",
+  "version": "1.0",
+  "phases": [
+    {
+      "phase_name": "tip_lifecycle",
+      "steps": [
+        {
+          "step_id": "home",
+          "action": "robot.home",
+          "params": {},
+          "description": "Home the Flex"
+        },
+        {
+          "step_id": "pickup",
+          "action": "robot.pick_up_tip",
+          "params": {
+            "pipette": "p1000_single_gen2",
+            "labware": "tip_rack",
+            "well": "A1",
+            "offset_start": "top",
+            "prep_after": false
+          },
+          "description": "Pick up and sensor-verify one tip"
+        },
+        {
+          "step_id": "presence",
+          "action": "robot.get_tip_presence",
+          "params": {"pipette": "p1000_single_gen2"},
+          "description": "Read the tip sensor"
+        },
+        {
+          "step_id": "drop",
+          "action": "robot.drop_tip",
+          "params": {
+            "pipette": "p1000_single_gen2",
+            "labware": "trash",
+            "well": "A1",
+            "offset_start": "top",
+            "home_after": false
+          },
+          "description": "Drop and sensor-verify the tip"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,80 @@
-"""twin-real: stateful stub of a real-hardware ExecutorBackend."""
+"""twin-real: real-hardware stubs and workflow-level Flex execution."""
 
 from twin_real.backend import CommunicationError, RealStubBackend
+from twin_real.flex_adapter import FLEX_ACTIONS, FlexStepError, FlexWorkflowAdapter
+from twin_real.flex_contract import (
+    FlexCommand,
+    FlexEStopState,
+    FlexExecutionMode,
+    FlexFeature,
+    FlexLightsState,
+    FlexMachineStatus,
+    FlexPipetteInfo,
+    FlexResultValue,
+    FlexTipPresence,
+)
+from twin_real.flex_runner import (
+    CompiledFlexWorkflow,
+    FlexExecutionRecord,
+    FlexMixedWorkflowError,
+    FlexParallelExecutionError,
+    FlexTransport,
+    FlexWorkflowRunner,
+    FlexWorkflowExecutionError,
+    FlexWorkflowRunResult,
+)
+from twin_real.flex_sila import (
+    FLEX_FEATURE_ENDPOINTS,
+    FLEX_SILA_METHODS,
+    FlexFeatureEndpoint,
+    FlexMachineError,
+    FlexProtobufCodec,
+    FlexSiLACommandError,
+    FlexSiLACommandTimeout,
+    FlexSiLAConnectionError,
+    FlexSiLAContractError,
+    FlexSiLADependencyError,
+    FlexSiLAError,
+    FlexSiLATransport,
+    SiLACommandWire,
+    StandardSiLACommandWire,
+)
 
-__all__ = ["CommunicationError", "RealStubBackend"]
+__all__ = [
+    "CommunicationError",
+    "CompiledFlexWorkflow",
+    "FLEX_ACTIONS",
+    "FLEX_FEATURE_ENDPOINTS",
+    "FLEX_SILA_METHODS",
+    "FlexCommand",
+    "FlexEStopState",
+    "FlexExecutionRecord",
+    "FlexExecutionMode",
+    "FlexFeature",
+    "FlexLightsState",
+    "FlexFeatureEndpoint",
+    "FlexMachineError",
+    "FlexMachineStatus",
+    "FlexMixedWorkflowError",
+    "FlexParallelExecutionError",
+    "FlexProtobufCodec",
+    "FlexPipetteInfo",
+    "FlexResultValue",
+    "FlexSiLACommandError",
+    "FlexSiLACommandTimeout",
+    "FlexSiLAConnectionError",
+    "FlexSiLAContractError",
+    "FlexSiLADependencyError",
+    "FlexSiLAError",
+    "FlexSiLATransport",
+    "FlexStepError",
+    "FlexTransport",
+    "FlexTipPresence",
+    "FlexWorkflowAdapter",
+    "FlexWorkflowExecutionError",
+    "FlexWorkflowRunner",
+    "FlexWorkflowRunResult",
+    "RealStubBackend",
+    "SiLACommandWire",
+    "StandardSiLACommandWire",
+]

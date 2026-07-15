@@ -13,6 +13,11 @@ pass-through  Actions with no Matterix asset and no deterministic timing
               (plc, ssh, sample, squidstat plot helpers). Logged but not sent
               to the DT. Duration is None.
 
+``category`` describes DT simulation/timing coverage only. It is not an
+execution router. Hardware adapters dispatch from ``device``/``action``; for
+example, ``robot.set_lights`` remains a Flex-owned hardware action even though
+it is pass-through from Matterix's perspective.
+
 Timing coverage
 ---------------
 timed_duration_s  Sum of all steps with known duration — lower bound for
@@ -33,7 +38,7 @@ Usage
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
@@ -75,7 +80,7 @@ class ParsedStep:
     device: str  # prefix before the first dot (e.g. "robot", "squidstat", "wait")
     params: dict[str, Any]
     description: str
-    category: StepCategory
+    category: StepCategory  # DT coverage, not hardware execution ownership
     estimated_duration_s: float | None
     timing_note: str | None = None   # explains why duration is partial or absent
     thread_name: str | None = None   # set when the step comes from a parallel thread
